@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>UNO Game</title>
+    <style>
+      .game-area {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+      }
+
+      .play-area {
+          display: flex;
+          gap: 20px;
+          align-items: center;
+          margin: 30px 0;
+      }
+
+      .deck {
+          width: 100px;
+          height: 150px;
+          border: 2px solid black;
+          border-radius: 10px;
+          background-color: #333;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+      }
+
+      .card {
+          display: inline-block;
+          width: 100px;
+          height: 150px;
+          margin: 5px;
+          border: 2px solid black;
+          border-radius: 10px;
+          text-align: center;
+          line-height: 150px;
+          font-size: 24px;
+          cursor: pointer;
+          user-select: none;
+          transition: transform 0.2s;
+      }
+      
+      .card:hover {
+          transform: translateY(-10px);
+      }
+      
+      .red { background-color: #ff6b6b; }
+      .blue { background-color: #4dabf7; }
+      .green { background-color: #69db7c; }
+      .yellow { background-color: #ffd43b; }
+      
+      #game-info {
+          font-size: 24px;
+          margin-bottom: 20px;
+      }
+      
+      #computer-info {
+          font-size: 20px;
+          margin-bottom: 20px;
+      }
+
+      #player-hand {
+          margin-top: 30px;
+      }
+
+      button {
+          padding: 10px 20px;
+          font-size: 18px;
+          cursor: pointer;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          margin-top: 20px;
+      }
+
+      button:hover {
+          background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-area">
+        <div id="game-info"></div>
+        <div id="computer-info"></div>
+        
+        <div class="play-area">
+            <div class="deck" onclick="drawCard()">
+                КОЛОДА
+            </div>
+            <div id="current-card"></div>
+        </div>
+
+        <div id="player-hand"></div>
+        <button onclick="drawCard()">Взять карту</button>
+    </div>
+
+    <script>
+      const colors = ['red', 'blue', 'green', 'yellow'];
+      const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+      let deck = [];
+      let playerHand = [];
+      let computerHand = [];
+      let currentCard;
+      let isPlayerTurn = true;
+
+      // Создание колоды
+      function createDeck() {
+          deck = [];
+          colors.forEach(color => {
+              numbers.forEach(number => {
+                  deck.push({ color, number });
+                  if (number !== '0') {
+                      deck.push({ color, number });
+                  }
+              });
+          });
+          shuffleDeck();
+      }
+
+      // Перемешивание колоды
+      function shuffleDeck() {
+          for (let i = deck.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [deck[i], deck[j]] = [deck[j], deck[i]];
+          }
+      }
+
+      // Раздача начальных карт
+      function dealInitialCards() {
+          for (let i = 0; i < 7; i++) {
+              playerHand.push(deck.pop());
+              computerHand.push(deck.pop());
+          }
+          currentCard = deck.pop();
+          updateGameDisplay();
+      }
+
+      // Обновление отображения игры
+      function updateGameDisplay() {
+          // Отображение информации о текущем ходе
+          document.getElementById('game-info').textContent = 
+              isPlayerTurn ? 'Ваш ход' : 'Ход компьютера';
+          
+          // Отображение количества карт у компьютера
+          document.getElementById('computer-info').textContent = 
+              `Карт у компьютера: ${computerHand.length}`;
+          
+          // Отображение текущей карты
+          const currentCardDiv = document.getElementById('current-card');
+          currentCardDiv.innerHTML = ''; // Очищаем предыдущее содержимое
+          currentCardDiv.appendChild(createCardHTML(currentCard)); // Добавляем карту как DOM элемент
+          
+          // Отображение карт игрока
+          const playerHandDiv = document.getElementById('player-hand');
+          playerHandDiv.innerHTML = '';
+          playerHand.forEach((card, index) => {
+              const cardElement = createCardHTML(card);
+              cardElement.onclick = () => playCard(index);
+              playerHandDiv.appendChild(cardElement);
+          });
+      }
+
+      // Создание HTML элемента карты
+      function createCardHTML(card) {
+          const div = document.createElement('div');
+          div.className = `card ${card.color}`;
+          div.textContent = card.number;
+          return div;
+      }
+
+      // Ход игрока
+      function playCard(index) {
+          if (!isPlayerTurn) return;
+
+          const card = playerHand[index];
+          if (canPlayCard(card)) {
+              currentCard = playerHand.splice(index, 1)[0];
+              isPlayerTurn = false;
+              updateGameDisplay();
+
+              if (playerHand.length === 0) {
+                  alert('Вы победили!');
+                  startNewGame();
+                  return;
+              }
+
+              setTimeout(computerTurn, 1000);
+          }
+      }
+
+      // Проверка возможности сыграть карту
+      function canPlayCard(card) {
+          return card.color === currentCard.color ||
+                 card.number === currentCard.number;
+      }
+
+      // Взятие карты из колоды
+      function drawCard() {
+          if (!isPlayerTurn) return;
+
+          if (deck.length === 0) {
+              alert('Колода пуста!');
+              return;
+          }
+
+          playerHand.push(deck.pop());
+          isPlayerTurn = false;
+          updateGameDisplay();
+          setTimeout(computerTurn, 1000);
+      }
+
+      // Ход компьютера
+      function computerTurn() {
+          let playedCard = false;
+
+          for (let i = 0; i < computerHand.length; i++) {
+              if (canPlayCard(computerHand[i])) {
+                  currentCard = computerHand.splice(i, 1)[0];
+                  playedCard = true;
+                  break;
+              }
+          }
+
+          if (!playedCard && deck.length > 0) {
+              computerHand.push(deck.pop());
+          }
+
+          if (computerHand.length === 0) {
+              alert('Компьютер победил!');
+              startNewGame();
+              return;
+          }
+
+          isPlayerTurn = true;
+          updateGameDisplay();
+      }
+
+      // Начало новой игры
+      function startNewGame() {
+          deck = [];
+          playerHand = [];
+          computerHand = [];
+          createDeck();
+          dealInitialCards();
+          isPlayerTurn = true;
+          updateGameDisplay();
+      }
+
+      // Запуск игры
+      startNewGame();
+    </script>
+  </body>
+</html>
