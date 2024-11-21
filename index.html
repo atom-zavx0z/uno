@@ -55,7 +55,7 @@
           background-color: #ffdf00;
           background-image: url('data:image/svg+xml,\
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1250" preserveAspectRatio="xMidYMid meet">\
-              <g transform="scale(0.8) translate(200,125)">\
+              <g transform="scale(1.2) translate(-140,104)">\
                 <rect width="2000" height="1250" fill="%23ffdf00"/>\
                 <path d="m1289.9 235.83 56.57-56.57v56.57h56.57l-56.57 56.57 56.57 56.57h-56.57v56.56l-56.57-56.57-56.56 56.57v-56.57h-56.57l56.57-56.56-56.57-56.57h56.56v-56.57zm-36.57 20v-28.29l36.57 36.57 36.57-36.56v28.28h28.29l-36.57 36.57 36.56 36.56h-28.28v28.29l-36.57-36.57-36.57 36.57v-28.29h-28.28l36.57-36.56-36.57-36.57z" fill="%23a2260b"/>\
                 <path d="m710.06 235.83 56.57-56.57v56.57h56.57l-56.57 56.57 56.57 56.57-56.57-0.01 0.01 56.57-56.57-56.57-56.57 56.57v-56.57h-56.57l56.57-56.57-56.57-56.57h56.57v-56.56zm-36.57 19.99v-28.28l36.57 36.57 36.57-36.57v28.28h28.29l-36.57 36.57 36.56 36.57h-28.28v28.28l-36.56-36.56-36.58 36.57v-28.29h-28.27l36.56-36.57-36.57-36.57z" fill="%23a2260b"/>\
@@ -68,8 +68,8 @@
               </g>\
             </svg>');
           background-size: contain;
-          background-repeat: no-repeat;
-          background-position: center;
+          background-repeat: space;
+          background-position: center bottom;
       }
 
       .card-back {
@@ -215,7 +215,7 @@
           if (!isPlayerTurn) return;
 
           if (deck.length === 0) {
-              alert('Колода пуста!');
+              alert('Колода пуст!');
               return;
           }
 
